@@ -48,7 +48,6 @@ pygame.init()
 screen_width = 800
 screen_height = 400
 screen = pygame.display.set_mode((screen_width, screen_height))
-# pygame.display.set_caption("RunescapeCraft: World of Fortnite Legends")
 pygame.display.set_caption("RunescapeCraft: Return of the Fisk of Klump")
 clock = pygame.time.Clock()
 font = pygame.font.Font("font/Pixeltype.ttf", 50)
@@ -65,18 +64,17 @@ ground_x_position = 0
 ground_speed = -50
 
 ## Obstacle settings
+# Snail
 snail_frame_1 = pygame.image.load("graphics/snail/snail1.png").convert_alpha()
 snail_frame_2 = pygame.image.load("graphics/snail/snail2.png").convert_alpha()
 snail_frames = [snail_frame_1, snail_frame_2]
 snail_frame_index = 0
-# snail_surface = pygame.image.load("graphics/snail/snail1.png").convert_alpha()
 
+#Fly
 fly_frame_1 = pygame.image.load("graphics/fly/fly1.png").convert_alpha()
 fly_frame_2 = pygame.image.load("graphics/fly/fly2.png").convert_alpha()
 fly_frames = [fly_frame_1, fly_frame_2]
 fly_frame_index = 0
-# fly_surface = pygame.image.load("graphics/fly/fly1.png").convert_alpha()
-
 
 obstacle_rect_list = []
 
