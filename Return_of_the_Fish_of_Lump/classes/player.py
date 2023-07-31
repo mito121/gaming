@@ -12,30 +12,43 @@ class Player(pygame.sprite.Sprite):
         self.player_jump = pygame.image.load('assets/graphics/player/player_jump.png').convert_alpha()
 
         self.image = self.player_walk[self.player_animation_index]
-        self.rect = self.image.get_rect(midbottom = (80,300))
-        self.gravity = 0
+        # self.rect = self.image.get_rect(midbottom = (80,300))
+        self.rect = self.image.get_rect(midbottom = (80,200))
+        # self.gravity = 0
+        self.swim_speed = 2
+        self.orientation = "right"
 
-        self.jump_sound = pygame.mixer.Sound('assets/audio/jump.mp3')
-        self.jump_sound.set_volume(0.05)
+        # self.jump_sound = pygame.mixer.Sound('assets/audio/jump.mp3')
+        # self.jump_sound.set_volume(0.05)
         
 
     def player_input(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE] and self.rect.bottom >= 300:
-            self.gravity = -20
-            self.jump_sound.play()
+        if keys[pygame.K_w] and self.rect.top > 0:
+            self.rect.y -= self.swim_speed
+        if keys[pygame.K_s] and self.rect.bottom < 400:
+            self.rect.y += self.swim_speed
+        if keys[pygame.K_d] and self.rect.right < 800:
+            self.rect.right += self.swim_speed
+            if self.orientation == "left":
+                self.orientation = "right"
+                self.image = pygame.transform.flip(self.image, True, False)
+        if keys[pygame.K_a] and self.rect.left > 0:
+            self.rect.left -= self.swim_speed
+            if self.orientation == "right":
+                self.orientation = "left"
+                self.image = pygame.transform.flip(self.image, True, False)
 
 
-    def apply_gravity(self):
-        self.gravity += 1
-        self.rect.y += self.gravity
-        if self.rect.bottom >= 300:
-            self.rect.bottom = 300
+    # def apply_gravity(self):
+        # self.rect.y = self.gravity
+        # if self.rect.bottom >= 300:
+        #     self.rect.bottom = 300
 
     def player_animation_state(self):
         if self.rect.bottom < 300: 
             # self.image = self.player_jump
-            print("frol")
+            print("")
         else:
             # self.player_animation_index += 0.1
             if self.player_animation_index >= len(self.player_walk):self.player_animation_index = 0
@@ -43,5 +56,5 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         self.player_input()
-        self.apply_gravity()
+        # self.apply_gravity()
         self.player_animation_state()
