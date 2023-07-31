@@ -4,12 +4,12 @@ from random import randint
 class Obstacle(pygame.sprite.Sprite):
      def __init__(self, type):
         super().__init__()
-        if type == "jellyfish":
-            jellyfish_frame_1 = pygame.image.load("assets/graphics/jellyfish/jellyfish.png").convert_alpha()
-          #   jellyfish_frame_2 = pygame.image.load("assets/graphics/jellyfish/jellyfish2.png").convert_alpha()
-          #   self.frames = [jellyfish_frame_1, jellyfish_frame_2]
+        if type == "mine":
+            mine_frame_1 = pygame.image.load("assets/graphics/mine/mine.png").convert_alpha()
+          #   mine_frame_2 = pygame.image.load("assets/graphics/mine/mine2.png").convert_alpha()
+          #   self.frames = [mine_frame_1, mine_frame_2]
             # y_pos = randint(100, 210) # 210
-            self.image = jellyfish_frame_1
+            self.image = mine_frame_1
             self.image = pygame.transform.scale(self.image, (75, 75))
 
         if type == "shark":

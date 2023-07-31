@@ -12,9 +12,8 @@ class Player(pygame.sprite.Sprite):
         self.player_jump = pygame.image.load('assets/graphics/player/player_jump.png').convert_alpha()
 
         self.image = self.player_walk[self.player_animation_index]
-        # self.rect = self.image.get_rect(midbottom = (80,300))
         self.rect = self.image.get_rect(midbottom = (80,200))
-        # self.gravity = 0
+        self.size = 1
         self.swim_speed = 2
         self.orientation = "right"
 
@@ -39,22 +38,18 @@ class Player(pygame.sprite.Sprite):
                 self.orientation = "left"
                 self.image = pygame.transform.flip(self.image, True, False)
 
+        def test():
+            print("TEST WTF")
 
-    # def apply_gravity(self):
-        # self.rect.y = self.gravity
-        # if self.rect.bottom >= 300:
-        #     self.rect.bottom = 300
 
-    def player_animation_state(self):
-        if self.rect.bottom < 300: 
+    # def player_animation_state(self):
+        # if self.rect.bottom < 300: 
             # self.image = self.player_jump
-            print("")
-        else:
+        # else:
             # self.player_animation_index += 0.1
-            if self.player_animation_index >= len(self.player_walk):self.player_animation_index = 0
+            # if self.player_animation_index >= len(self.player_walk):self.player_animation_index = 0
             # self.image = self.player_walk[int(self.player_animation_index)]
 
     def update(self):
         self.player_input()
-        # self.apply_gravity()
-        self.player_animation_state()
+        # self.player_animation_state()

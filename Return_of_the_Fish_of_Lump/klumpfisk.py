@@ -1,22 +1,29 @@
 import pygame
 from sys import exit
-from random import choice
+from random import randint, choice
 
 from classes.player import Player
 from classes.obstacle import Obstacle
+from classes.jellyfish import Jellyfish
 
 def display_score():
-    current_time = int(pygame.time.get_ticks() / 1000) - start_time
-    score_surface = font.render(f"Score: {current_time}", False, "#000000")
+    # current_time = int(pygame.time.get_ticks() / 1000) - start_time
+    score_surface = font.render(f"Score: {score}", False, "#000000")
     score_rect = score_surface.get_rect(center = (screen_width / 2, 25))
     screen.blit(score_surface,score_rect)
-    return current_time
+    return score
 
 def collision_sprite():
      if pygame.sprite.spritecollide(player.sprite, obstacle_group, False): # sprite, group, bool (destroy sprite on collision - True = delete sprite on collision)
         obstacle_group.empty()
         return False
      else: return True
+
+def eat():
+    global score
+    if pygame.sprite.spritecollide(player.sprite, jellyfish_group, True):
+        score += 1
+
 
 pygame.init()
 screen_width = 800
@@ -33,10 +40,12 @@ score = 0
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 obstacle_group = pygame.sprite.Group()
+jellyfish_group = pygame.sprite.Group()
 
 ## Environment
-sky_surface = pygame.image.load('assets/graphics/sky.png').convert_alpha()
-ground_surface = pygame.image.load('assets/graphics/ground.png').convert_alpha()
+sea_surface = pygame.image.load('assets/graphics/sea.jpg').convert_alpha()
+sea_surface = pygame.transform.scale(sea_surface, (1280, 720))
+# ground_surface = pygame.image.load('assets/graphics/ground.png').convert_alpha()
 
 ## Start Menu
 player_stand = pygame.image.load("assets/graphics/player/player_stand.png").convert_alpha()
@@ -79,14 +88,18 @@ while True:
         if is_playing:
             if event.type == obstacle_timer:
                 # obstacle_group.add(Obstacle(choice(['fly', 'snail', 'snail'])))
-                obstacle_group.add(Obstacle(choice(['shark', 'jellyfish'])))
+                choice([obstacle_group.add(Obstacle(choice(['shark', 'mine']))), Obstacle(choice(['shark', 'mine'])), jellyfish_group.add(Jellyfish())])
 
     ### IN GAME ###
     if is_playing:
         # Environment
-        screen.blit(ground_surface, (0, 300))
-        screen.blit(sky_surface, (0, 0))
+        # screen.blit(ground_surface, (0, 300))
+        screen.blit(sea_surface, (0, 0))
         score = display_score()
+
+        ## Jellyfish
+        jellyfish_group.draw(screen)
+        jellyfish_group.update()
 
         ## Obstacles
         obstacle_group.draw(screen)
@@ -95,6 +108,7 @@ while True:
         ## Player
         player.draw(screen)
         player.update()
+        eat()
         
 		## Check for collisions
         is_playing = collision_sprite()
