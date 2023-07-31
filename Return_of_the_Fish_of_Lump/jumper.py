@@ -79,7 +79,7 @@ while True:
         if is_playing:
             if event.type == obstacle_timer:
                 # obstacle_group.add(Obstacle(choice(['fly', 'snail', 'snail'])))
-                obstacle_group.add(Obstacle(choice(['fly', 'snail'])))
+                obstacle_group.add(Obstacle(choice(['shark', 'jellyfish'])))
 
     ### IN GAME ###
     if is_playing:
