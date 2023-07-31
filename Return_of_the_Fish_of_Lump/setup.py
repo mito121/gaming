@@ -1,31 +1,27 @@
 import sys
 from cx_Freeze import setup, Executable
 
-# Replace 'game.py' with your main Python game script.
-target = "jumper.py"
+## Run command to build: python setup.py build
 
-# Dependencies that cx_Freeze needs to include.
-# Add any additional packages/modules your game uses.
-# For example, if your game uses Pygame and you want to include it:
+target = "klumpfisk.py"
+
 build_exe_options = {
     "packages": ["pygame"],
     "include_files": ["./assets/"],
 }
 
-# GUI applications require a different base on Windows (the default is for a console application).
 base = None
 if sys.platform == "win32":
     base = "Win32GUI"
 
-# Create the executable.
 executables = [
-    Executable(target, base=base)  # Replace with your icon file if desired.
+    Executable(target, base=base, icon="assets/graphics/mola/klumpfisk.png")
 ]
 
 setup(
-    name="YourGameName",  # Replace with your game's name.
+    name="RunescapeCraft: Return of the Fisk of Klump",
     version="1.0",
-    description="Description of your game",
+    description="En klumpfisk er mere slimet end man skulle tro.",
     options={"build_exe": build_exe_options},
     executables=executables
 )

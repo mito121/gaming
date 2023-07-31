@@ -82,6 +82,7 @@ while True:
             if not is_playing:
                 if event.key == 32:
                     # RESTART GAME
+                    score = 0
                     is_playing = True
                     start_time = int(pygame.time.get_ticks() / 1000)
         
