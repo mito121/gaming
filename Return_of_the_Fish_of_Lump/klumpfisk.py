@@ -14,7 +14,7 @@ def display_score():
     return score
 
 def collision_sprite():
-     if pygame.sprite.spritecollide(player.sprite, obstacle_group, False): # sprite, group, bool (destroy sprite on collision - True = delete sprite on collision)
+     if pygame.sprite.spritecollide(player.sprite, obstacle_group, False, pygame.sprite.collide_mask): # sprite, group, bool (destroy sprite on collision - True = delete sprite on collision)
         obstacle_group.empty()
         return False
      else: return True
@@ -23,6 +23,7 @@ def eat():
     global score
     if pygame.sprite.spritecollide(player.sprite, jellyfish_group, True):
         score += 1
+        player.update()
 
 
 pygame.init()
@@ -33,7 +34,6 @@ pygame.display.set_caption("RunescapeCraft: Return of the Fisk of Klump")
 clock = pygame.time.Clock()
 font = pygame.font.Font("assets/font/Pixeltype.ttf", 50)
 is_playing = False
-start_time = 0
 score = 0
 
 ## Sprite groups
@@ -84,7 +84,6 @@ while True:
                     # RESTART GAME
                     score = 0
                     is_playing = True
-                    start_time = int(pygame.time.get_ticks() / 1000)
         
         if is_playing:
             if event.type == obstacle_timer:

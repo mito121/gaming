@@ -13,6 +13,7 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.player_walk[self.player_animation_index]
         self.rect = self.image.get_rect(midbottom = (80,200))
+        self.mask = pygame.mask.from_surface(self.image)
         self.size = 1
         self.swim_speed = 2
         self.orientation = "right"

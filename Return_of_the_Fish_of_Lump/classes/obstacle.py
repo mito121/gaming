@@ -11,6 +11,7 @@ class Obstacle(pygame.sprite.Sprite):
             # y_pos = randint(100, 210) # 210
             self.image = mine_frame_1
             self.image = pygame.transform.scale(self.image, (75, 75))
+            self.mask = pygame.mask.from_surface(self.image)
 
         if type == "shark":
             shark_frame_1 = pygame.image.load("assets/graphics/shark/shark.png").convert_alpha()
