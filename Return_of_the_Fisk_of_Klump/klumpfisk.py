@@ -18,6 +18,7 @@ def collision_sprite():
         obstacle_group.empty()
         jellyfish_group.empty()
         player.remove(player.sprite)
+        pygame.time.set_timer(obstacle_timer, 1750)
         return False
      else: return True
 
@@ -25,18 +26,21 @@ def eat():
     global score, obstacle_timer
     if pygame.sprite.spritecollide(player.sprite, jellyfish_group, True, pygame.sprite.collide_mask):
         score += 1
-        if score == 10:
+    set_obstacle_time_interval()
+
+def set_obstacle_time_interval():
+    global score 
+    match score:
+        case 10:
+            pygame.time.set_timer(obstacle_timer, 1500)
+        case 15:
             pygame.time.set_timer(obstacle_timer, 1250)
-        if score == 15:
+        case 20:
             pygame.time.set_timer(obstacle_timer, 1000)
-        if score == 20:
+        case 25:
             pygame.time.set_timer(obstacle_timer, 750)
-        if score == 25:
+        case 10:
             pygame.time.set_timer(obstacle_timer, 500)
-        if score == 30:
-            pygame.time.set_timer(obstacle_timer, 250)
-
-
 
 pygame.init()
 # screen_width = 800
@@ -75,7 +79,7 @@ game_start_message_rect = game_start_message.get_rect(center = (640, 650))
 
 ## Timers
 obstacle_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(obstacle_timer, 1500)
+pygame.time.set_timer(obstacle_timer, 1750)
 
 jellyfish_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(jellyfish_timer, 1500)
