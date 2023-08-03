@@ -1,6 +1,7 @@
 import pygame
 from sys import exit
 from random import randint, choice
+from pygame import mixer
 
 from classes.player import Player
 from classes.obstacle import Obstacle
@@ -26,7 +27,9 @@ def eat():
     global score, obstacle_timer
     if pygame.sprite.spritecollide(player.sprite, jellyfish_group, True, pygame.sprite.collide_mask):
         score += 1
+        pygame.time.set_timer(fart_timer, 1000)
     set_obstacle_time_interval()
+    
 
 def set_obstacle_time_interval():
     global score 
@@ -39,7 +42,7 @@ def set_obstacle_time_interval():
             pygame.time.set_timer(obstacle_timer, 1000)
         case 25:
             pygame.time.set_timer(obstacle_timer, 750)
-        case 10:
+        case 30:
             pygame.time.set_timer(obstacle_timer, 500)
 
 pygame.init()
@@ -84,12 +87,17 @@ pygame.time.set_timer(obstacle_timer, 1750)
 jellyfish_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(jellyfish_timer, 1500)
 
+fart_timer = pygame.USEREVENT + 3
+
 # snail_animation_timer = pygame.USEREVENT + 2
 # pygame.time.set_timer(snail_animation_timer, 500)
 
 # fly_animation_timer = pygame.USEREVENT + 3
 # pygame.time.set_timer(fly_animation_timer, 200)
 
+# fart sound
+mixer.init()
+fart_sound = mixer.Sound("./assets/audio/fart.mp3")
 
 while True:
     ## Listen to player input
@@ -115,6 +123,10 @@ while True:
                 
             if event.type == jellyfish_timer:
                 if randint(0, 2) >= 1: jellyfish_group.add(Jellyfish())
+
+            if event.type == fart_timer:
+                pygame.time.set_timer(fart_timer, 0)
+                mixer.Sound.play(fart_sound)
 
     ### IN GAME ###
     if is_playing:
