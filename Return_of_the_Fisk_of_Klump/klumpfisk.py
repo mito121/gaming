@@ -39,7 +39,7 @@ def set_obstacle_time_interval():
             pygame.time.set_timer(obstacle_timer, 1000)
         case 25:
             pygame.time.set_timer(obstacle_timer, 750)
-        case 10:
+        case 30:
             pygame.time.set_timer(obstacle_timer, 500)
 
 pygame.init()
