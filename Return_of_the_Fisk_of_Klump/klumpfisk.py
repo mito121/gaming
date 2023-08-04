@@ -6,6 +6,7 @@ from pygame import mixer
 from classes.player import Player
 from classes.obstacle import Obstacle
 from classes.jellyfish import Jellyfish
+from classes.poop import Poop
 
 def display_score():
     # current_time = int(pygame.time.get_ticks() / 1000) - start_time
@@ -18,6 +19,7 @@ def collision_sprite():
      if pygame.sprite.spritecollide(player.sprite, obstacle_group, False, pygame.sprite.collide_mask): # sprite, group, bool (destroy sprite on collision - True = delete sprite on collision)
         obstacle_group.empty()
         jellyfish_group.empty()
+        poop_group.empty()
         player.remove(player.sprite)
         pygame.time.set_timer(obstacle_timer, 1750)
         return False
@@ -28,6 +30,7 @@ def eat():
     if pygame.sprite.spritecollide(player.sprite, jellyfish_group, True, pygame.sprite.collide_mask):
         score += 1
         pygame.time.set_timer(fart_timer, 1000)
+        mixer.Sound.play(chewing_sound)
     set_obstacle_time_interval()
     
 
@@ -61,6 +64,7 @@ score = 0
 player = pygame.sprite.GroupSingle()
 obstacle_group = pygame.sprite.Group()
 jellyfish_group = pygame.sprite.Group()
+poop_group = pygame.sprite.Group()
 
 ## Environment
 sea_surface = pygame.image.load('assets/graphics/sea.jpg').convert_alpha()
@@ -98,6 +102,8 @@ fart_timer = pygame.USEREVENT + 3
 # fart sound
 mixer.init()
 fart_sound = mixer.Sound("./assets/audio/fart.mp3")
+chewing_sound = mixer.Sound("./assets/audio/chewing.wav")
+player_sprite = None
 
 while True:
     ## Listen to player input
@@ -113,7 +119,8 @@ while True:
                 if event.key == 32:
                     # RESTART GAME
                     score = 0
-                    player.add(Player())
+                    player_sprite = Player()
+                    player.add(player_sprite)
                     is_playing = True
         
         if is_playing:
@@ -126,6 +133,7 @@ while True:
 
             if event.type == fart_timer:
                 pygame.time.set_timer(fart_timer, 0)
+                poop_group.add(Poop(player_sprite.rect.copy()))
                 mixer.Sound.play(fart_sound)
 
     ### IN GAME ###
@@ -148,6 +156,10 @@ while True:
         player.update()
         eat()
         
+        ## Poop
+        poop_group.draw(screen)
+        poop_group.update()
+
 		## Check for collisions
         is_playing = collision_sprite()
 
