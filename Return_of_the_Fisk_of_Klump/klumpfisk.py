@@ -2,11 +2,13 @@ import pygame
 from sys import exit
 from random import randint, choice
 import requests
+from pygame import mixer
 
 from classes.player import Player
 from classes.obstacle import Obstacle
 from classes.jellyfish import Jellyfish
 from classes.text_input import TextInput
+from classes.poop import Poop
 
 def display_score():
     # current_time = int(pygame.time.get_ticks() / 1000) - start_time
@@ -19,6 +21,7 @@ def collision_sprite():
      if pygame.sprite.spritecollide(player.sprite, obstacle_group, False, pygame.sprite.collide_mask): # sprite, group, bool (destroy sprite on collision - True = delete sprite on collision)
         obstacle_group.empty()
         jellyfish_group.empty()
+        poop_group.empty()
         player.remove(player.sprite)
         pygame.time.set_timer(obstacle_timer, 2000)
         # submit_score()
@@ -29,7 +32,10 @@ def eat():
     global score, obstacle_timer
     if pygame.sprite.spritecollide(player.sprite, jellyfish_group, True, pygame.sprite.collide_mask):
         score += 1
+        pygame.time.set_timer(fart_timer, 1000)
+        mixer.Sound.play(chewing_sound)
     set_obstacle_time_interval()
+    
 
 def set_obstacle_time_interval():
     global score
@@ -81,6 +87,7 @@ text_input = TextInput(480, 240, 300, 40)
 player = pygame.sprite.GroupSingle()
 obstacle_group = pygame.sprite.Group()
 jellyfish_group = pygame.sprite.Group()
+poop_group = pygame.sprite.Group()
 
 ## Environment
 sea_surface = pygame.image.load('assets/graphics/sea.jpg').convert_alpha()
@@ -112,6 +119,20 @@ pygame.time.set_timer(obstacle_timer, 2000)
 jellyfish_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(jellyfish_timer, 1500)
 
+fart_timer = pygame.USEREVENT + 3
+
+# snail_animation_timer = pygame.USEREVENT + 2
+# pygame.time.set_timer(snail_animation_timer, 500)
+
+# fly_animation_timer = pygame.USEREVENT + 3
+# pygame.time.set_timer(fly_animation_timer, 200)
+
+# fart sound
+mixer.init()
+fart_sound = mixer.Sound("./assets/audio/fart.mp3")
+chewing_sound = mixer.Sound("./assets/audio/chewing.wav")
+player_sprite = None
+
 while True:
     ## Listen to player input
     for event in pygame.event.get():
@@ -128,7 +149,8 @@ while True:
                 if event.key == pygame.K_SPACE and gamertag:
                     # RESTART GAME
                     score = 0
-                    player.add(Player())
+                    player_sprite = Player()
+                    player.add(player_sprite)
                     is_playing = True
                     first_game = False
                 if event.key == pygame.K_RETURN:
@@ -140,6 +162,11 @@ while True:
                 
             if event.type == jellyfish_timer:
                 if randint(0, 2) >= 1: jellyfish_group.add(Jellyfish())
+
+            if event.type == fart_timer:
+                pygame.time.set_timer(fart_timer, 0)
+                poop_group.add(Poop(player_sprite.rect.copy()))
+                mixer.Sound.play(fart_sound)
 
     ### IN GAME ###
     if is_playing:
@@ -160,6 +187,10 @@ while True:
         player.update()
         eat()
         
+        ## Poop
+        poop_group.draw(screen)
+        poop_group.update()
+
 		## Check for collisions
         is_playing = collision_sprite()
 
