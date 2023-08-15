@@ -1,11 +1,13 @@
 import pygame
 from sys import exit
 from random import randint, choice
+import requests
 from pygame import mixer
 
 from classes.player import Player
 from classes.obstacle import Obstacle
 from classes.jellyfish import Jellyfish
+from classes.text_input import TextInput
 from classes.poop import Poop
 
 def display_score():
@@ -21,7 +23,8 @@ def collision_sprite():
         jellyfish_group.empty()
         poop_group.empty()
         player.remove(player.sprite)
-        pygame.time.set_timer(obstacle_timer, 1750)
+        pygame.time.set_timer(obstacle_timer, 2000)
+        # submit_score()
         return False
      else: return True
 
@@ -35,30 +38,50 @@ def eat():
     
 
 def set_obstacle_time_interval():
-    global score 
+    global score
     match score:
         case 10:
-            pygame.time.set_timer(obstacle_timer, 1500)
+            pygame.time.set_timer(obstacle_timer, 1750)
         case 15:
-            pygame.time.set_timer(obstacle_timer, 1250)
+            pygame.time.set_timer(obstacle_timer, 1600)
         case 20:
-            pygame.time.set_timer(obstacle_timer, 1000)
+            pygame.time.set_timer(obstacle_timer, 1450)
         case 25:
-            pygame.time.set_timer(obstacle_timer, 750)
+            pygame.time.set_timer(obstacle_timer, 1200)
         case 30:
-            pygame.time.set_timer(obstacle_timer, 500)
+            pygame.time.set_timer(obstacle_timer, 1000)
+
+def submit_score():
+    global gamertag, score
+    data = {'gamertag': gamertag, 'score': score}
+    url = "http://localhost:3001/score"
+
+    try:
+        res = requests.post(url, json=data)
+        print("res", res.json())
+        # Check if the request was successful (status code 200 means success)
+        if res.status_code == 201:
+            data = res.json()  # If the response is in JSON format, you can parse it using .json()
+            print(data)
+        else:
+            print(f"Request failed with status code: {res.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+
 
 pygame.init()
-# screen_width = 800
-# screen_height = 400
 screen_width = 1280
 screen_height = 720
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("RunescapeCraft: Return of the Fisk of Klump")
 clock = pygame.time.Clock()
 font = pygame.font.Font("assets/font/Pixeltype.ttf", 60)
+first_game = True
+gamertag = ""
 is_playing = False
 score = 0
+
+text_input = TextInput(480, 240, 300, 40)
 
 ## Sprite groups
 player = pygame.sprite.GroupSingle()
@@ -77,6 +100,11 @@ player_stand = pygame.transform.rotozoom(player_stand, 0, 1) # rotozoom(surface,
 # player_stand = pygame.transform.scale2x(player_stand)
 player_stand_rect = player_stand.get_rect(center = (640, 360))
 
+select_gamertag = font.render("Choose your gamertag", False, "#ffffff")
+select_gamertag_rect = select_gamertag.get_rect(center = (640, 180))
+start_game = font.render("Press ENTER to start", False, "#ffffff")
+start_game_rect = start_game.get_rect(center = (640, 380))
+
 game_title = font.render("RunescapeCraft: Return of the Fisk of Klump", False, "#ffffff")
 game_title_rect = game_title.get_rect(center = (640, 180))
 game_intructions = font.render("Control with W,A,S,D or arrow keys", False, "#ffffff")
@@ -86,7 +114,7 @@ game_start_message_rect = game_start_message.get_rect(center = (640, 650))
 
 ## Timers
 obstacle_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(obstacle_timer, 1750)
+pygame.time.set_timer(obstacle_timer, 2000)
 
 jellyfish_timer = pygame.USEREVENT + 2
 pygame.time.set_timer(jellyfish_timer, 1500)
@@ -113,19 +141,23 @@ while True:
             pygame.quit()
             exit()
 
+        text_input.handle_event(event)
+
         if event.type == pygame.KEYDOWN:
             # keys = [32, 119, 1073741906] # Space, W, Arrow up
             if not is_playing:
-                if event.key == 32:
+                if event.key == pygame.K_SPACE and gamertag:
                     # RESTART GAME
                     score = 0
                     player_sprite = Player()
                     player.add(player_sprite)
                     is_playing = True
+                    first_game = False
+                if event.key == pygame.K_RETURN:
+                    gamertag = text_input.text
         
         if is_playing:
             if event.type == obstacle_timer:
-                # obstacle_group.add(Obstacle(choice(['fly', 'snail', 'snail'])))
                 obstacle_group.add(Obstacle(choice(['shark', 'mine'])))
                 
             if event.type == jellyfish_timer:
@@ -139,7 +171,6 @@ while True:
     ### IN GAME ###
     if is_playing:
         # Environment
-        # screen.blit(ground_surface, (0, 300))
         screen.blit(sea_surface, (0, 0))
         score = display_score()
 
@@ -166,21 +197,29 @@ while True:
     else:
     	### START MENU ###
         screen.fill((94, 129, 162))
-        screen.blit(player_stand, player_stand_rect)
-
         score_message = font.render(f"Your score: {score}", False, "#ffffff")
         score_message_rect = score_message.get_rect(center = (640, 180))
         restart_message = font.render("Press SPACE to restart the game", False, "#ffffff")
         restart_message_rect = restart_message.get_rect(center = (640, 600))
 
-        if  pygame.time.get_ticks() < 2000: ## Bad way to check if this is first time game is started
-            screen.blit(game_title, game_title_rect)
-            screen.blit(game_intructions, game_intructions_rect)
-            screen.blit(game_start_message, game_start_message_rect)
+        if first_game:
+            if not gamertag:
+                text_input.update()
+                screen.blit(select_gamertag, select_gamertag_rect)
+                screen.blit(start_game, start_game_rect)
+                text_input.draw(screen)
+
+            else:
+                screen.blit(player_stand, player_stand_rect)
+                screen.blit(game_title, game_title_rect)
+                screen.blit(game_intructions, game_intructions_rect)
+                screen.blit(game_start_message, game_start_message_rect)
         else:
+            screen.blit(player_stand, player_stand_rect)
             screen.blit(restart_message, restart_message_rect)
             screen.blit(score_message, score_message_rect)
 
     ## Update display surface (screen)
-    pygame.display.update()
+    # pygame.display.update()
+    pygame.display.flip()
     clock.tick(60)
