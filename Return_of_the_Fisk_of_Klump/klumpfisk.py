@@ -8,6 +8,7 @@ from classes.player import Player
 from classes.obstacle import Obstacle
 from classes.jellyfish import Jellyfish
 from classes.text_input import TextInput
+from classes.checkbox_input import Checkbox
 from classes.poop import Poop
 
 def display_score():
@@ -80,8 +81,10 @@ first_game = True
 gamertag = ""
 is_playing = False
 score = 0
+sausages_enabled = False
 
 text_input = TextInput(480, 240, 300, 40)
+checkbox_input = Checkbox(600, 600, 50, 50)
 
 ## Sprite groups
 player = pygame.sprite.GroupSingle()
@@ -142,6 +145,7 @@ while True:
             exit()
 
         text_input.handle_event(event)
+        checkbox_input.handle_event(event)
 
         if event.type == pygame.KEYDOWN:
             # keys = [32, 119, 1073741906] # Space, W, Arrow up
@@ -155,6 +159,7 @@ while True:
                     first_game = False
                 if event.key == pygame.K_RETURN:
                     gamertag = text_input.text
+                    sausages_enabled = checkbox_input.checked
         
         if is_playing:
             if event.type == obstacle_timer:
@@ -163,7 +168,7 @@ while True:
             if event.type == jellyfish_timer:
                 if randint(0, 2) >= 1: jellyfish_group.add(Jellyfish())
 
-            if event.type == fart_timer:
+            if event.type == fart_timer and sausages_enabled:
                 pygame.time.set_timer(fart_timer, 0)
                 poop_group.add(Poop(player_sprite.rect.copy()))
                 mixer.Sound.play(fart_sound)
@@ -208,7 +213,7 @@ while True:
                 screen.blit(select_gamertag, select_gamertag_rect)
                 screen.blit(start_game, start_game_rect)
                 text_input.draw(screen)
-
+                checkbox_input.draw(screen)
             else:
                 screen.blit(player_stand, player_stand_rect)
                 screen.blit(game_title, game_title_rect)
